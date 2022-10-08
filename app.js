@@ -1,4 +1,5 @@
 require("colors");
+const { guardarDB, leerDB } = require("./db/guardarArchivo");
 const { inquirerMenu, pausa, leerInput } = require("./helpers/inquirer");
 const Tareas = require("./models/tareas");
 
@@ -8,6 +9,12 @@ const main = async () => {
 
   // instanciamos la tarea
   const tareas = new Tareas();
+
+  const tareasDB = leerDB();
+
+  if (tareasDB) {
+    tareas.cargarTareasFromArray(tareasDB);
+  }
   do {
     //opcion seleccionada por medio de la funcion que imprime menu
     opt = await inquirerMenu();
@@ -21,12 +28,12 @@ const main = async () => {
         break;
       case "2":
         //listamos la tarea
-        console.log(tareas._listado);
+        tareas.listadoCompleto(tareasDB);
+        // console.log(tareas.listadoArr);
         break;
     }
 
-    console.log("\n");
-    console.log({ opt });
+    guardarDB(tareas.listadoArr);
 
     await pausa();
   } while (opt !== "0");
